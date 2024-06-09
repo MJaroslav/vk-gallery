@@ -3,23 +3,29 @@
  */
 package io.github.mjaroslav.vkgallery;
 
+import io.github.mjaroslav.vkgallery.util.FXMLUtils;
+import io.github.mjaroslav.vkgallery.vk.VKHelper;
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 public class VKGallery extends Application {
+    public static final VKHelper VK = new VKHelper();
+    public static Stage PRIMARY_STAGE;
+
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(@NotNull Stage primaryStage) throws Exception {
-        val root = new VBox();
-        val scene = new Scene(root, 300, 300);
-        primaryStage.setScene(scene);
+        PRIMARY_STAGE = primaryStage;
+        VK.login(primaryStage);
+        primaryStage.setResizable(true);
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(400);
+//        FXMLUtils.changeScene(primaryStage, "Main");
         primaryStage.show();
     }
 }

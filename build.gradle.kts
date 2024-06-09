@@ -10,6 +10,10 @@ repositories {
 
 dependencies {
     implementation(libs.vk)
+    implementation(libs.apache.lang3)
+    implementation(libs.apache.io)
+    implementation(libs.gson)
+    implementation(libs.appdirs)
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -40,5 +44,5 @@ tasks.named<Test>("test") {
 
 javafx {
     version = "21"
-    modules("javafx.controls", "javafx.fxml")
+    modules("javafx.controls", "javafx.fxml", "javafx.web")
 }
