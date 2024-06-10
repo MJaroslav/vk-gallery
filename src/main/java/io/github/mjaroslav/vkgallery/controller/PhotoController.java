@@ -54,6 +54,9 @@ public class PhotoController extends Controller implements Initializable {
             };
             animation.play();
         });
+        root.widthProperty().addListener((observable, oldValue, newValue) -> {
+            resizeImage(newValue.doubleValue());
+        });
     }
 
     @FXML
@@ -74,7 +77,24 @@ public class PhotoController extends Controller implements Initializable {
         image.setImage(null);
     }
 
+    protected void resizeImage(double size) {
+        val img = image.getImage();
+        if (img == null) return;
+        image.setFitWidth(size);
+        image.setFitHeight(size);
+        if (img.getWidth() > img.getHeight()) {
+            image.setViewport(
+                new Rectangle2D((img.getWidth() - img.getHeight()) / 2, 0, img.getHeight(), img.getHeight()));
+        }
+        else {
+            image.setViewport(
+                new Rectangle2D(0, (img.getHeight() - img.getWidth()) / 2, img.getWidth(), img.getWidth()));
+        }
+        label.setPrefWidth(size);
+    }
+
     protected @Nullable Image loadImage() {
+        val prevSize = VKGallery.CONFIG.getPreviewSize();
         if (photo != null) {
             val last = getSizeForPreview(photo.getSizes());
             if (last == null) return null;
@@ -90,24 +110,30 @@ public class PhotoController extends Controller implements Initializable {
             }
             Image image;
             if (last.getWidth() > last.getHeight()) {
-                image = new Image(cached.toFile().toURI().toString(), 0, 200, true, true, true);
+                image = new Image(cached.toFile().toURI().toString(), 0, prevSize, true, true, true);
                 image.progressProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue.doubleValue() == 1) {
-                        this.image.setViewport(
-                            new Rectangle2D((image.getWidth() - image.getHeight()) / 2, 0, image.getHeight(),
-                                image.getHeight()));
-                    }
+                    if (newValue.doubleValue() == 1) resizeImage(root.getWidth());
                 });
+//                image.progressProperty().addListener((observable, oldValue, newValue) -> {
+//                    if (newValue.doubleValue() == 1) {
+//                        this.image.setViewport(
+//                            new Rectangle2D((image.getWidth() - image.getHeight()) / 2, 0, image.getHeight(),
+//                                image.getHeight()));
+//                    }
+//                });
             }
             else {
-                image = new Image(cached.toFile().toURI().toString(), 200, 0, true, true, true);
+                image = new Image(cached.toFile().toURI().toString(), prevSize, 0, true, true, true);
                 image.progressProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue.doubleValue() == 1) {
-                        this.image.setViewport(
-                            new Rectangle2D(0, (image.getHeight() - image.getWidth()) / 2, image.getWidth(),
-                                image.getWidth()));
-                    }
+                    if (newValue.doubleValue() == 1) resizeImage(root.getWidth());
                 });
+//                image.progressProperty().addListener((observable, oldValue, newValue) -> {
+//                    if (newValue.doubleValue() == 1) {
+//                        this.image.setViewport(
+//                            new Rectangle2D(0, (image.getHeight() - image.getWidth()) / 2, image.getWidth(),
+//                                image.getWidth()));
+//                    }
+//                });
             }
             Platform.runLater(() -> {
                 this.image.setImage(image);
@@ -130,24 +156,30 @@ public class PhotoController extends Controller implements Initializable {
             }
             Image image;
             if (last.getWidth() > last.getHeight()) {
-                image = new Image(cached.toFile().toURI().toString(), 0, 200, true, true, true);
+                image = new Image(cached.toFile().toURI().toString(), 0, prevSize, true, true, true);
                 image.progressProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue.doubleValue() == 1) {
-                        this.image.setViewport(
-                            new Rectangle2D((image.getWidth() - image.getHeight()) / 2, 0, image.getHeight(),
-                                image.getHeight()));
-                    }
+                    if (newValue.doubleValue() == 1) resizeImage(root.getWidth());
                 });
+//                image.progressProperty().addListener((observable, oldValue, newValue) -> {
+//                    if (newValue.doubleValue() == 1) {
+//                        this.image.setViewport(
+//                            new Rectangle2D((image.getWidth() - image.getHeight()) / 2, 0, image.getHeight(),
+//                                image.getHeight()));
+//                    }
+//                });
             }
             else {
-                image = new Image(cached.toFile().toURI().toString(), 200, 0, true, true, true);
+                image = new Image(cached.toFile().toURI().toString(), prevSize, 0, true, true, true);
                 image.progressProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue.doubleValue() == 1) {
-                        this.image.setViewport(
-                            new Rectangle2D(0, (image.getHeight() - image.getWidth()) / 2, image.getWidth(),
-                                image.getWidth()));
-                    }
+                    if (newValue.doubleValue() == 1) resizeImage(root.getWidth());
                 });
+//                image.progressProperty().addListener((observable, oldValue, newValue) -> {
+//                    if (newValue.doubleValue() == 1) {
+//                        this.image.setViewport(
+//                            new Rectangle2D(0, (image.getHeight() - image.getWidth()) / 2, image.getWidth(),
+//                                image.getWidth()));
+//                    }
+//                });
             }
             Platform.runLater(() -> {
                 this.image.setImage(image);
@@ -166,7 +198,8 @@ public class PhotoController extends Controller implements Initializable {
     }
 
     private PhotoSizes getSizeForPreview(@NotNull List<PhotoSizes> sizes) {
-        return sizes.stream().filter(size -> size.getHeight() >= 200 || size.getWidth() >= 200).findFirst()
+        val prevSize = VKGallery.CONFIG.getPreviewSize();
+        return sizes.stream().filter(size -> size.getHeight() >= prevSize || size.getWidth() >= prevSize).findFirst()
             .orElseThrow();
     }
 
@@ -174,11 +207,12 @@ public class PhotoController extends Controller implements Initializable {
     public void onClicked(@NotNull MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
             if (album != null) {
-                Pair<Parent, AlbumController> pair = FXMLUtils.changeScene(VKGallery.PRIMARY_STAGE, "Album");
+                Pair<Parent, AlbumController> pair = FXMLUtils.loadAndSetScene(VKGallery.PRIMARY_STAGE, "Album");
                 pair.getRight().setAlbum(album);
             }
             else {
-                Pair<Parent, PhotoFullController> pair = FXMLUtils.changeScene(VKGallery.PRIMARY_STAGE, "PhotoFull");
+                Pair<Parent, PhotoFullController> pair =
+                    FXMLUtils.loadAndSetScene(VKGallery.PRIMARY_STAGE, "PhotoFull");
                 pair.getRight().setImage(photo);
                 pair.getRight().setLastScene(root.getScene());
             }

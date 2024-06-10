@@ -28,10 +28,13 @@ public class FXMLUtils {
         return Pair.of(view, controller);
     }
 
-    public @NotNull <V extends Parent, C extends Controller> Pair<@NotNull V, @Nullable C> changeScene(
+    public @NotNull <V extends Parent, C extends Controller> Pair<@NotNull V, @Nullable C> loadAndSetScene(
         @NotNull Stage stage, @NotNull String name) throws IOException {
         Pair<V, C> pair = loadFXML(name);
-        val scene = new Scene(pair.getLeft());
+        val orig = stage.getScene();
+        val w = orig == null ? 600 : stage.getScene().getWidth();
+        val h = orig == null ? 400 : stage.getScene().getHeight();
+        val scene = new Scene(pair.getLeft(), w, h);
         stage.setScene(scene);
         pair.getRight().postInitialize();
         return pair;

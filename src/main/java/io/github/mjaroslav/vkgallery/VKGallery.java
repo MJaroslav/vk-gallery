@@ -3,16 +3,25 @@
  */
 package io.github.mjaroslav.vkgallery;
 
-import io.github.mjaroslav.vkgallery.util.FXMLUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.github.mjaroslav.vkgallery.pojo.Config;
+import io.github.mjaroslav.vkgallery.util.ResourceManager;
 import io.github.mjaroslav.vkgallery.vk.VKHelper;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
+
 public class VKGallery extends Application {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final VKHelper VK = new VKHelper();
     public static Stage PRIMARY_STAGE;
+    public static Config CONFIG;
 
     public static void main(String[] args) {
         launch(args);
@@ -20,12 +29,31 @@ public class VKGallery extends Application {
 
     @Override
     public void start(@NotNull Stage primaryStage) throws Exception {
+        loadConfig();
         PRIMARY_STAGE = primaryStage;
         VK.login(primaryStage);
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(400);
-//        FXMLUtils.changeScene(primaryStage, "Main");
+        //        FXMLUtils.changeScene(primaryStage, "Main");
         primaryStage.show();
+    }
+
+    @SneakyThrows
+    public static void loadConfig() {
+        val file = ResourceManager.getConfigDirectory().resolve("config").toFile();
+        if (FileUtils.isRegularFile(file))
+            CONFIG = GSON.fromJson(FileUtils.readFileToString(file, StandardCharsets.UTF_8), Config.class);
+        else {
+            CONFIG = new Config();
+            saveConfig();
+        }
+    }
+
+    @SneakyThrows
+    public static void saveConfig() {
+        val file = ResourceManager.getConfigDirectory().resolve("config").toFile();
+        FileUtils.createParentDirectories(file);
+        FileUtils.write(file, GSON.toJson(CONFIG), StandardCharsets.UTF_8);
     }
 }

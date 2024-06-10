@@ -50,9 +50,9 @@ public class VKHelper {
             val response =
                 GSON.fromJson(FileUtils.readFileToString(TOKEN_FILE.toFile(), StandardCharsets.UTF_8), Auth.class);
             actor = new UserActor(response.getUserId(), response.getAccessToken());
-            FXMLUtils.changeScene(stage, "Main");
+            FXMLUtils.loadAndSetScene(stage, "Main");
         }
-        else FXMLUtils.changeScene(stage, "Login");
+        else FXMLUtils.loadAndSetScene(stage, "Login");
     }
 
     @SneakyThrows
@@ -74,7 +74,7 @@ public class VKHelper {
             val response = new Auth(accessToken, userId, expiresAt);
             PathUtils.createParentDirectories(TOKEN_FILE);
             FileUtils.write(TOKEN_FILE.toFile(), GSON.toJson(response), StandardCharsets.UTF_8);
-            FXMLUtils.changeScene(VKGallery.PRIMARY_STAGE, "Album");
+            FXMLUtils.loadAndSetScene(VKGallery.PRIMARY_STAGE, "Album");
         }
     }
 
@@ -97,13 +97,15 @@ public class VKHelper {
     @SneakyThrows
     public void getAllPhotos(PhotoAlbumFull album, @NotNull TriConsumer<Integer, Integer, List<Photo>> action) {
         var offset = 0;
+        val pageSize = VKGallery.CONFIG.getPageSize();
         GetResponse response;
         do {
-            response = vk.photos().get(actor).rev(true).albumId(album.getId() + "").offset(offset * 1000).count(1000)
-                .photoSizes(true).execute();
-            if (!response.getItems().isEmpty()) action.accept(offset + 1, (int)Math.ceil(album.getSize() / 1000d),
-                response.getItems());
+            response =
+                vk.photos().get(actor).rev(true).albumId(album.getId() + "").offset(offset * pageSize).count(pageSize)
+                    .photoSizes(true).execute();
+            if (!response.getItems().isEmpty())
+                action.accept(offset + 1, (int) Math.ceil(album.getSize() / (double) pageSize), response.getItems());
             offset++;
-        } while (response.getItems().size() == 1000);
+        } while (response.getItems().size() == pageSize);
     }
 }

@@ -11,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import lombok.Setter;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
@@ -39,7 +38,7 @@ public class PhotoFullController extends Controller {
                 event.consume();
                 try {
                     if (lastScene != null) VKGallery.PRIMARY_STAGE.setScene(lastScene);
-                    else FXMLUtils.changeScene(VKGallery.PRIMARY_STAGE, "Main");
+                    else FXMLUtils.loadAndSetScene(VKGallery.PRIMARY_STAGE, "Main");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

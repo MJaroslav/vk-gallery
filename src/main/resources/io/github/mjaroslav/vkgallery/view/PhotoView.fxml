@@ -4,12 +4,12 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onClicked" prefHeight="200.0" prefWidth="200.0" stylesheets="/io/github/mjaroslav/vkgallery/css/Photo.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.mjaroslav.vkgallery.controller.PhotoController">
+<AnchorPane fx:id="root" minHeight="80.0" minWidth="80.0" onMouseClicked="#onClicked" stylesheets="/io/github/mjaroslav/vkgallery/css/Photo.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.mjaroslav.vkgallery.controller.PhotoController">
    <children>
-      <StackPane alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane alignment="BOTTOM_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fx:id="image" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
-            <Label fx:id="label" alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" text="Placeholder" textAlignment="CENTER" wrapText="true" />
+            <ImageView fx:id="image" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
+            <Label fx:id="label" alignment="BOTTOM_CENTER" text="Placeholder" textAlignment="CENTER" wrapText="true" />
          </children>
       </StackPane>
    </children>
